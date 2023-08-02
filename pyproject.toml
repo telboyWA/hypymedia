@@ -1,23 +1,15 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
-name = "pyel-driver"
-version = "0.0.1"
-authors = [
-    { name="Terence Stupple", email="telstupple@gmail.com"},
-]
-description = "Python function to HTML string utility."
+[tool.poetry]
+name = "hypymedia"
+version = "0.1.0"
+description = "HATEOAS tool for python"
+authors = ["Tel Stupple <telstupple@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-license = { file="LICENSE" }
-requires-python = ">=3.7"
 
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+[tool.poetry.dependencies]
+python = "^3.10"
 
-[project.urls]
-"Homepage" = "https://github.com/telboyWA/pyel-driver"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
