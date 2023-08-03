@@ -1,14 +1,14 @@
-from hypymedia import html, body, h1, p, div
+from hypymedia import html_, body_, h1_, div_, p_
 
 
 def html_view(heading: str):
-    return html(
+    return html_(
         [
-            body(
+            body_(
                 [
-                    h1(heading),
-                    div(
-                        p("My first paragraph."),
+                    h1_(heading),
+                    div_(
+                        p_("My first paragraph."),
                     ),
                 ],
                 {"hx-boost": "true"},

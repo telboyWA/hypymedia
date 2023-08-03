@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hypymedia"
-version = "0.1.10"
+version = "0.1.11"
 description = "HTML creation via Python for HATEOAS applications. #hypermediaFTW"
 authors = ["Tel Stupple <telstupple@gmail.com>"]
 packages = [{ include = "hypymedia" }]
