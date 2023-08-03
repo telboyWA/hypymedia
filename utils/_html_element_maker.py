@@ -1,8 +1,7 @@
-# Helper to generate a list of all of the HTML elements supported by modern browsers.
-# Little bit of manual work here to copy stdout in to the html.py file whilst
-# I work out a better way to handle this.
+# A list of all of the HTML elements supported by modern browsers.
+from pathlib import Path
 
-html_list = [
+tags = [
     ("a",),
     ("abbr",),
     ("address",),
@@ -51,14 +50,14 @@ html_list = [
     ("html",),
     ("iframe",),
     ("img", True),
-    ("input", True),
+    ("input_", True),
     ("kbd",),
     ("label",),
     ("legend",),
     ("li",),
     ("link", True),
-    ("main",),
-    ("map",),
+    ("main_",),
+    ("map_",),
     ("mark",),
     ("menu",),
     ("meta", True),
@@ -115,10 +114,45 @@ html_list = [
 
 
 def create_elements(html_list: set) -> None:
+    tags = []
     for html_element in html_list:
         el, *tag = html_element
         end_tag = False if tag else True
-        print(f"{el} = _el_factory('{el}', end_tag={end_tag})")
+        tags.append(f'("{el}", {end_tag})')
+        # print(f'("{el}", {end_tag}),')
+
+    output_text = f'tags = [{",".join([tag for tag in tags])}]'
+
+    output_file = Path().cwd() / "hypymedia" / "html_list.py"
+
+    with open(output_file, "w") as py_file:
+        py_file.write(output_text)
 
 
-create_elements(html_list)
+def list_elements_for_export(html_list: set) -> None:
+    elements = []
+    for html_element in html_list:
+        el, *_ = html_element
+        elements.append(el)
+
+    output_text = f'from .main import ({",".join([element for element in elements])})'
+
+    output_file = Path().cwd() / "hypymedia" / "__init__.py"
+
+    with open(output_file, "w") as py_file:
+        py_file.write(output_text)
+
+
+for tag in tags:
+    if tag[0].endswith("_"):
+        continue
+    tag_end = ""
+    if len(tag) > 1:
+        tag_end = tag[1]
+    tag = f"({tag[0]}_,{tag_end}),"
+    print(tag)
+
+
+# # Update HTML elements
+# create_elements(tags)
+# list_elements_for_export(tags)
