@@ -1,74 +1,133 @@
 import pytest
-from hypymedia.html_list import tags
-from hypymedia.main import create_element, create_tag_function
+from hypymedia.main import element
 
+def test_element():
+    # Test a tag with no attributes or content
+    assert element('a', True)() == "<a></a>"
+    # Test a tag with attributes but no content
+    assert element('a', True)({"href": "https://example.com"}) == '<a href="https://example.com"></a>'
+    # Test a tag with content but no attributes
+    assert element('a', True)("Link text") == "<a>Link text</a>"
+    # Test a tag with both attributes and content
+    assert element('a', True)({"href": "https://example.com"}, "Link text") == '<a href="https://example.com">Link text</a>'
+    # Test a tag with multiple attributes and content
+    assert element('a', True)({"href": "https://example.com", "target": "_blank"}, "Link text") == '<a href="https://example.com" target="_blank">Link text</a>'
+    # Test a tag with multiple content strings
+    assert element('a', True)({"href": "https://example.com"}, "Link", " text") == '<a href="https://example.com">Link text</a>'
+    # Test a self-closing tag with no attributes
+    assert element('br', False)() == "<br>"
+    # Test a self-closing tag with attributes
+    assert element('br', False)({"class": "my-class"}) == '<br class="my-class">'
 
-def test_create_element_with_empty_attributes():
-    result = create_element("div")
-    assert result == "<div></div>"
-
-
-def test_create_element_with_attributes():
-    result = create_element("div", attributes={"class": "test", "id": "mydiv"})
-    assert result == '<div class="test" id="mydiv"></div>'
-
-
-def test_create_element_with_boolean_attributes():
-    result = create_element("div", attributes={"class": "test", "disabled": True})
-    assert result == '<div class="test" disabled></div>'
-
-
-def test_create_element_without_end_tag():
-    result = create_element("input", end_tag=False)
-    assert result == "<input>"
-
-
-def test_create_element_with_content_str():
-    result = create_element("p", content="Hello World")
-    assert result == "<p>Hello World</p>"
-
-
-def test_create_element_with_content_list():
-    result = create_element("p", content=["Hello", " ", "World"])
-    assert result == "<p>Hello World</p>"
-
-
-def test_create_element_with_underscore_in_tag():
-    result = create_element("p_", content="Hello World")
-    assert result == "<p>Hello World</p>"
-
-
-def test_create_element_with_mixed_parameters():
-    result = create_element(
-        "div", content=["Hello", "World"], attributes={"class": "test"}, end_tag=False
-    )
-    assert result == '<div class="test">HelloWorld'
-
-
-def test_create_tag_function():
-    p_ = create_tag_function("p")
-    result = p_("Hello World", {"class": "text"})
-    assert result == '<p class="text">Hello World</p>'
-
-
-@pytest.mark.parametrize("tag_name,end_tag", tags)
-def test_tags_creation(tag_name, end_tag):
-    # Get the function from the global scope
-    tag_function = globals()[tag_name] = create_tag_function(tag_name, end_tag=end_tag)
-
-    content = "Content" if end_tag else None
-    attributes = {"class": "test"}
-    result = tag_function(content=content, attributes=attributes)
-
-    # Removing trailing underscore from the tag name
-    actual_tag_name = tag_name[:-1]  # Stripping the last character
-
-    # Formatting attributes
-    attributes_str = " ".join(f'{k}="{v}"' for k, v in attributes.items())
-
-    if end_tag:
-        expected = f"<{actual_tag_name} {attributes_str}>Content</{actual_tag_name}>"
-    else:
-        expected = f"<{actual_tag_name} {attributes_str}>"
-
-    assert result == expected.strip()
+@pytest.mark.parametrize("tag,expected,close_tag", [
+    ("a", "<a></a>", True),
+    ("abbr", "<abbr></abbr>", True),
+    ("address", "<address></address>", True),
+    ("area", "<area>", False),
+    ("article", "<article></article>", True),
+    ("aside", "<aside></aside>", True),
+    ("audio", "<audio></audio>", True),
+    ("base", "<base>", False),
+    ("blockquote", "<blockquote></blockquote>", True),
+    ("body", "<body></body>", True),
+    ("br", "<br>", False),
+    ("button", "<button></button>", True),
+    ("canvas", "<canvas></canvas>", True),
+    ("caption", "<caption></caption>", True),
+    ("circle", "<circle></circle>", True),
+    ("cite", "<cite></cite>", True),
+    ("code", "<code></code>", True),
+    ("col", "<col>", False),
+    ("colgroup", "<colgroup></colgroup>", True),
+    ("data", "<data></data>", True),
+    ("datalist", "<datalist></datalist>", True),
+    ("dd", "<dd></dd>", True),
+    ("del", "<del></del>", True),
+    ("details", "<details></details>", True),
+    ("dialog", "<dialog></dialog>", True),
+    ("div", "<div></div>", True),
+    ("dl", "<dl></dl>", True),
+    ("dt", "<dt></dt>", True),
+    ("ellipse", "<ellipse></ellipse>", True),
+    ("em", "<em></em>", True),
+    ("embed", "<embed>", False),
+    ("fieldset", "<fieldset></fieldset>", True),
+    ("figcaption", "<figcaption></figcaption>", True),
+    ("figure", "<figure></figure>", True),
+    ("footer", "<footer></footer>", True),
+    ("form", "<form></form>", True),
+    ("h1", "<h1></h1>", True),
+    ("h2", "<h2></h2>", True),
+    ("h3", "<h3></h3>", True),
+    ("h4", "<h4></h4>", True),
+    ("h5", "<h5></h5>", True),
+    ("h6", "<h6></h6>", True),
+    ("head", "<head></head>", True),
+    ("header", "<header></header>", True),
+    ("hr", "<hr>", False),
+    ("html", "<html></html>", True),
+    ("iframe", "<iframe></iframe>", True),
+    ("img", "<img>", False),
+    ("input", "<input>", False),
+    ("kbd", "<kbd></kbd>", True),
+    ("label", "<label></label>", True),
+    ("legend", "<legend></legend>", True),
+    ("li", "<li></li>", True),
+    ("link", "<link>", False),
+    ("main", "<main></main>", True),
+    ("map", "<map></map>", True),
+    ("mark", "<mark></mark>", True),
+    ("menu", "<menu></menu>", True),
+    ("meta", "<meta>", False),
+    ("meter", "<meter></meter>", True),
+    ("nav", "<nav></nav>", True),
+    ("noscript", "<noscript></noscript>", True),
+    ("ol", "<ol></ol>", True),
+    ("optgroup", "<optgroup></optgroup>", True),
+    ("option", "<option></option>", True),
+    ("output", "<output></output>", True),
+    ("p", "<p></p>", True),
+    ("picture", "<picture></picture>", True),
+    ("polygon", "<polygon></polygon>", True),
+    ("portal", "<portal></portal>", True),
+    ("pre", "<pre></pre>", True),
+    ("progress", "<progress></progress>", True),
+    ("param", "<param>", False),
+    ("q", "<q></q>", True),
+    ("rect", "<rect></rect>", True),
+    ("s", "<s></s>", True),
+    ("samp", "<samp></samp>", True),
+    ("script", "<script></script>", True),
+    ("section", "<section></section>", True),
+    ("select", "<select></select>", True),
+    ("slot", "<slot></slot>", True),
+    ("small", "<small></small>", True),
+    ("source", "<source>", False),
+    ("span", "<span></span>", True),
+    ("strong", "<strong></strong>", True),
+    ("style", "<style></style>", True),
+    ("sub", "<sub></sub>", True),
+    ("summary", "<summary></summary>", True),
+    ("sup", "<sup></sup>", True),
+    ("svg", "<svg></svg>", True),
+    ("table", "<table></table>", True),
+    ("tbody", "<tbody></tbody>", True),
+    ("td", "<td></td>", True),
+    ("template", "<template></template>", True),
+    ("text", "<text></text>", True),
+    ("textarea", "<textarea></textarea>", True),
+    ("tfoot", "<tfoot></tfoot>", True),
+    ("th", "<th></th>", True),
+    ("thead", "<thead></thead>", True),
+    ("time", "<time></time>", True),
+    ("title", "<title></title>", True),
+    ("tr", "<tr></tr>", True),
+    ("track", "<track>", False),
+    ("u", "<u></u>", True),
+    ("ul", "<ul></ul>", True),
+    ("var", "<var></var>", True),
+    ("video", "<video></video>", True),
+    ("wbr", "<wbr>", False),
+])
+def test_all_tags(tag, expected, close_tag):
+    assert element(tag, close_tag)() == expected

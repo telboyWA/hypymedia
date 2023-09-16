@@ -1,3 +1,4 @@
+# hypymedia/__init__.py 
 from .main import (
     a_,
     abbr_,
